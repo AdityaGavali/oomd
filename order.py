@@ -18,7 +18,7 @@ class Meal:
         self.__menu_items = []
 
     def add_meal_item(self, meal_item):
-        self.__menu_items.append(meal_item)
+     self.__menu_items.append(meal_item)
 
 
 class Check():
