@@ -11,8 +11,8 @@ class Account:
         self.__address = address
         self.__status = status
 
-    def reset_password(self):
-        None
+    def reset_password(self,new_pas):
+        self.__password = new_pas
 
 
 class Person(ABC):
