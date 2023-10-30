@@ -4,7 +4,7 @@ class Kitchen:
         self.__chefs = []
 
     def assign_chef(self, chef):
-        None
+        self.__chefs.append(chef)
 
 
 class Branch:
@@ -13,8 +13,7 @@ class Branch:
         self.__location = location
         self.__kitchen = kitchen
 
-    def add_table_chart(self):
-        None
+   
 
 
 class Restaurant:
@@ -23,14 +22,16 @@ class Restaurant:
         self.__branches = []
 
     def add_branch(self, branch):
-        None
+        self.__branches.append(branch)
 
 
 class TableChart:
     def __init__(self, id):
         self.__table_chart_id = id
         self.__table_chart_image = []
-
+    def add_table_chart(self, table):
+        self.__table_chart_image.append(table)
     def print(self):
-        None
+        for i in self.__table_chart_image:
+            print(i, end = ' ')
 
