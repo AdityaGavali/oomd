@@ -6,7 +6,7 @@ class MenuItem:
         self.__price = price
 
     def update_price(self, price):
-        None
+        self.__price = price
 
 
 class MenuSection:
@@ -17,7 +17,7 @@ class MenuSection:
         self.__menu_items = []
 
     def add_menu_item(self, menu_item):
-        None
+        self.__menu_items.append(menu_item)
 
 
 class Menu:
@@ -28,8 +28,9 @@ class Menu:
         self.__menu_sections = []
 
     def add_menu_section(self, menu_section):
-        None
+        self.__menu_sections.append(menu_section)
 
     def print(self):
-        None
+        for i in self.__menu_sections:
+         print(i, end = ' ')
 
