@@ -5,6 +5,7 @@ from menu import MenuItem, MenuSection, Menu
 from order import MealItem, Meal, Check, Order
 from people import Account, Receptionist, Manager, Chef
 
+
 kitchen = Kitchen("Main Kitchen")
 branch = Branch("Branch 1", "123 Main St", kitchen)
 restaurant = Restaurant("My Restaurant")
