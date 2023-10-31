@@ -5,7 +5,7 @@ from enums import *
 
 
 class Account:
-    def __init__(self, id, password, address, status=AccountStatus.Active):
+    def __init__(self, id, password, address, status=AccountStatus.ACTIVE):
         self.__id = id
         self.__password = password
         self.__address = address

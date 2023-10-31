@@ -29,7 +29,7 @@ class Menu:
 
     def add_menu_section(self, menu_section):
         self.__menu_sections.append(menu_section)
-
+   
     def print(self):
         for i in self.__menu_sections:
          print(i, end = ' ')
