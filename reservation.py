@@ -1,5 +1,52 @@
+# from datetime import datetime
+# from enums import *
+
+
+# class Table:
+#     def __init__(self, id, max_capacity, location_identifier, status=TableStatus.FREE):
+#         self.__table_id = id
+#         self.__max_capacity = max_capacity
+#         self.__location_identifier = location_identifier
+#         self.__status = status
+#         self.__seats = []
+
+#     def is_table_free(self):
+#         None
+
+#     def add_reservation(self):
+#         None
+
+#     def search(self, capacity, start_time):
+#         # return all tables with the given capacity and availability
+#         None
+
+
+# class TableSeat:
+#     def __init__(self):
+#         self.__table_seat_number = 0
+#         self.__type = SeatType.REGULAR
+
+#     def update_seat_type(self, seat_type):
+#         self.__type = seat_type
+
+
+# class Reservation:
+#     def __init__(self, id, people_count, notes, customer):
+#         self.__reservation_id = id
+#         self.__time_of_reservation = datetime.now()
+#         self.__people_count = people_count
+#         self.__status = ReservationStatus.REQUESTED
+#         self.__notes = notes
+#         self.__checkin_time = datetime.now()
+#         self.__customer = customer
+#         self.__tables = []
+#         self.__notifications = []
+
+#     def update_people_count(self, count):
+#         None
+
 from datetime import datetime
-from enums import *
+from enums import TableStatus, SeatType, ReservationStatus
 
 
 class Table:
@@ -11,23 +58,34 @@ class Table:
         self.__seats = []
 
     def is_table_free(self):
-        None
+        return self.__status == TableStatus.FREE
 
-    def add_reservation(self):
-        None
+    def add_reservation(self, reservation):
+        self.__status = TableStatus.RESERVED
+        self.__seats.extend(reservation.get_table_seats())
 
     def search(self, capacity, start_time):
-        # return all tables with the given capacity and availability
-        None
+        # Return all tables with the given capacity and availability
+        available_tables = []
+        for table in self.__tables:
+            if table.__status == TableStatus.FREE and table.__max_capacity >= capacity:
+                available_tables.append(table)
+        return available_tables
 
 
 class TableSeat:
-    def __init__(self):
-        self.__table_seat_number = 0
-        self.__type = SeatType.REGULAR
+    def __init__(self, seat_number, seat_type=SeatType.REGULAR):
+        self.__table_seat_number = seat_number
+        self.__type = seat_type
 
     def update_seat_type(self, seat_type):
         self.__type = seat_type
+
+    def get_seat_number(self):
+        return self.__table_seat_number
+
+    def get_seat_type(self):
+        return self.__type
 
 
 class Reservation:
@@ -37,13 +95,30 @@ class Reservation:
         self.__people_count = people_count
         self.__status = ReservationStatus.REQUESTED
         self.__notes = notes
-        self.__checkin_time = datetime.now()
+        self.__checkin_time = None
         self.__customer = customer
         self.__tables = []
         self.__notifications = []
 
     def update_people_count(self, count):
-        None
+        self.__people_count = count
 
+    def add_table(self, table):
+        self.__tables.append(table)
+
+    def get_table_seats(self):
+        seats = []
+        for table in self.__tables:
+            for seat_number in range(1, table.__max_capacity + 1):
+                seat = TableSeat(seat_number)
+                seats.append(seat)
+        return seats
+
+    def check_in(self):
+        self.__status = ReservationStatus.CHECKED_IN
+        self.__checkin_time = datetime.now()
+
+    def cancel_reservation(self):
+        self.__status = ReservationStatus.CANCELED
 
 

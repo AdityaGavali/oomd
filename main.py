@@ -3,7 +3,7 @@ from infrastructure import Kitchen, Branch, Restaurant, TableChart
 from reservation import Table, TableSeat, Reservation
 from menu import MenuItem, MenuSection, Menu
 from order import MealItem, Meal, Check, Order
-from people import Account, Receptionist, Manager, Chef
+from people import Account, Receptionist, Manager, Chef , Person
 
 
 # kitchen = Kitchen("Main Kitchen")
@@ -49,14 +49,14 @@ from people import Account, Receptionist, Manager, Chef
     # Printing Order Details (same as before, no changes here)
 
     # Modifying Menu Item and Printing Menu
-print("\nBefore Menu Item Modification:")
-print("Menu Items in Section 1:")
+# print("\nBefore Menu Item Modification:")
+# print("Menu Items in Section 1:")
 
 
-print("Hello")
+# print("Hello")
 
-print("\nAfter Menu Item Modification:")
-print("Menu Items in Section 1:")
+# print("\nAfter Menu Item Modification:")
+# print("Menu Items in Section 1:")
 
 
 import curses
@@ -99,4 +99,8 @@ def main(stdscr):
 
         stdscr.refresh()
 
-curses.wrapper(main)
+# curses.wrapper(main)
+
+
+
+

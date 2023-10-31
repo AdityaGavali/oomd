@@ -1,0 +1,3 @@
+Paid 100 using Cash
+Paid 100 using Credit Card ending with 3456
+Paid 100 using Online to example@example.com
