@@ -1,5 +1,5 @@
-import tkinter as tk
-from tkinter import messagebox
+
+import streamlit as st
 from abc import ABC
 
 class Bill(ABC):
@@ -52,76 +52,27 @@ class Online(Payment):
         else:
             return "Insufficient funds in the online account. Payment failed."
 
-def process_payment():
-    amount = float(amount_entry.get())
-    payment_type = payment_type_var.get()
-    payment_status = ""
+def main():
+    st.title("Payment Processor")
 
-    if payment_type == "Cash":
-        payment = Cash(amount)
-    elif payment_type == "Credit Card":
-        card_number = card_number_entry.get()
-        expiry_date = expiry_date_entry.get()
+    payment_type = st.selectbox("Payment Type", ["Cash", "Credit Card", "Online"])
+    amount = st.number_input("Bill Amount", min_value=0.0, step=1.0, format="%.2f")
+
+    if payment_type == "Credit Card":
+        card_number = st.text_input("Card Number")
+        expiry_date = st.text_input("Expiry Date")
         payment = CreditCard(amount, card_number, expiry_date)
     elif payment_type == "Online":
-        email = email_entry.get()
+        email = st.text_input("Email")
         payment = Online(amount, email)
+    else:
+        payment = Cash(amount)
 
-    amount_paid = float(amount_paid_entry.get())
-    payment_status = payment.make_payment(amount_paid)
-    payment_details_text.config(text=payment_status)
+    amount_paid = st.number_input("Amount Paid", min_value=0.0, step=1.0, format="%.2f")
 
-# Create the main window
-root = tk.Tk()
-root.title("Payment Processor")
+    if st.button("Process Payment"):
+        payment_status = payment.make_payment(amount_paid)
+        st.write("Payment Status:", payment_status)
 
-# Payment Type
-payment_type_var = tk.StringVar()
-payment_type_var.set("Cash")
-payment_type_label = tk.Label(root, text="Payment Type:")
-payment_type_label.pack()
-payment_type_menu = tk.OptionMenu(root, payment_type_var, "Cash", "Credit Card", "Online")
-payment_type_menu.pack()
-
-# Amount
-amount_label = tk.Label(root, text="Bill Amount:")
-amount_label.pack()
-amount_entry = tk.Entry(root)
-amount_entry.pack()
-
-# Card Number (for Credit Card)
-card_number_label = tk.Label(root, text="Card Number:")
-card_number_label.pack()
-card_number_entry = tk.Entry(root)
-card_number_entry.pack()
-
-# Expiry Date (for Credit Card)
-expiry_date_label = tk.Label(root, text="Expiry Date:")
-expiry_date_label.pack()
-expiry_date_entry = tk.Entry(root)
-expiry_date_entry.pack()
-
-# Email (for Online Payment)
-email_label = tk.Label(root, text="Email:")
-email_label.pack()
-email_entry = tk.Entry(root)
-email_entry.pack()
-
-# Amount Paid
-amount_paid_label = tk.Label(root, text="Amount Paid:")
-amount_paid_label.pack()
-amount_paid_entry = tk.Entry(root)
-amount_paid_entry.pack()
-
-# Process Payment Button
-process_button = tk.Button(root, text="Process Payment", command=process_payment)
-process_button.pack()
-
-# Payment Details
-payment_details_label = tk.Label(root, text="Payment Status:")
-payment_details_label.pack()
-payment_details_text = tk.Label(root, text="")
-payment_details_text.pack()
-
-# Run the application
-root.mainloop()
+if __name__ == "__main__":
+    main()
