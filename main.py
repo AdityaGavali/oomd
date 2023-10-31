@@ -65,17 +65,25 @@ def main(stdscr):
     curses.curs_set(0)  # Hide the cursor
     stdscr.clear()
     stdscr.addstr(0, 0, "Welcome to our Restaurant Management System !!", curses.A_BOLD)
-    stdscr.addstr(2, 0, "1. View Menu")
-    stdscr.addstr(3, 0, "2. Place Order")
-    stdscr.addstr(4, 0, "3. View Bill")
-    stdscr.addstr(5, 0, "4. Exit")
+    stdscr.addstr(2, 0,"0. Our Team")
+    stdscr.addstr(3, 0, "1. View Menu")
+    stdscr.addstr(4, 0, "2. Place Order")
+    stdscr.addstr(5, 0, "3. View Bill")
+    stdscr.addstr(6, 0, "4. Exit")
     stdscr.refresh()
 
     while True:
         choice = stdscr.getch()
         stdscr.clear()
-
-        if choice == ord('1'):
+        if choice ==ord('0'):
+            stdscr.addstr(0, 0, "Details of all the employee", curses.A_BOLD)
+            # name = input("Enter the name: ")
+            # email =(input("Enter the email address: "))  # Convert input to integer if age is expected as an integer
+            # phone = int(input("Enter you phone number : "))
+            # person_object = Receptionist(name, email,phone)
+            stdscr.addstr(2,0," Aditya , Vansh , Hemant , Ashish")
+            
+        elif choice == ord('1'):
             # Code for viewing menu goes here
             stdscr.addstr(0, 0, "View Menu Option Selected", curses.A_BOLD)
         elif choice == ord('2'):
