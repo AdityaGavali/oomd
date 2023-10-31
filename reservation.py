@@ -1,5 +1,5 @@
 from datetime import datetime
-from constants import *
+from enums import *
 
 
 class Table:
@@ -27,7 +27,7 @@ class TableSeat:
         self.__type = SeatType.REGULAR
 
     def update_seat_type(self, seat_type):
-        None
+        self.__type = seat_type
 
 
 class Reservation:
