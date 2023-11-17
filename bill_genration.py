@@ -1,13 +1,35 @@
 
-from abc import ABC
+# from abc import ABC
+
+# class Bill(ABC):
+#     def __init__(self, amount):
+#         self.amount = amount
+
+#     def calculate_total(self):
+#         return self.amount
+#     def generate_bill(self):
+#         # Print the bill with items and their prices
+#         print("Bill:")
+#         for item in self.items:
+#             print(item)
+#         print(f"Total: ${self.calculate_total():.2f}")
+from abc import ABC, abstractmethod
 
 class Bill(ABC):
-    def __init__(self, amount):
-        self.amount = amount
+    def __init__(self):
+        self.items = []
+
+    @abstractmethod
+    def make_payment(self, amount_paid):
+        pass
+
+    def add_item(self, item_name, item_price):
+        self.items.append({"name": item_name, "price": item_price})
 
     def calculate_total(self):
-        return self.amount
+        return sum(item["price"] for item in self.items)
 
+        
 class Payment(Bill):
     def make_payment(self, amount_paid):
         if amount_paid >= self.amount:

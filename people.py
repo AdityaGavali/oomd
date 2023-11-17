@@ -93,6 +93,8 @@ class Receptionist(Employee):
             return reservation
         else:
             return None
+    def view_table_chart(self, table_chart):
+        table_chart.print_table_chart()    
 # class Receptionist(Employee):
 #     def __init__(self, id, account, name, email, phone):
 #         super().__init__(id, account, name, email, phone)

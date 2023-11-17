@@ -4,12 +4,15 @@ from reservation import Reservation, Table, TableSeat
 from infrastructure import Branch, Kitchen, Restaurant, TableChart
 from people import Receptionist, Manager, Chef
 from enums import ReservationStatus
-from bill_genration import Cash, CreditCard, Online
+from bill_generation_with_ui import *
 from menu import Menu, MenuItem, MenuSection
 
 # Hardcoded admin credentials (for simplicity, replace with a secure authentication mechanism)
 admin_username = "admin"
 admin_password = "admin123"
+session_state = st.session_state
+if 'bill' not in session_state:
+    session_state.bill = Bill()
 
 # Initialize the restaurant
 restaurant = Restaurant("My Restaurant")
@@ -38,7 +41,7 @@ menu.add_menu_section(section2)
 branch.add_menu(menu)
 
 # Create Streamlit UI
-st.title("Restaurant Management System")
+st.title("Deccan Delights Restaurant")
 
 # Initialize session state for user and navigation
 if "user" not in st.session_state:
@@ -105,26 +108,46 @@ else:
 
     elif st.session_state.nav_option == "Generate Bill":
         st.header("Generate Bill")
+        bill = session_state.bill
 
-        # Form to generate a bill
-        bill_amount = st.number_input("Bill Amount", min_value=0.0, step=0.01)
+        # Add items to the bill
+        item_name = st.text_input("Item Name")
+        item_price = st.number_input("Item Price", min_value=0.0, step=0.01)
+
+        if st.button("Add Item"):
+          bill.add_item(item_name, item_price)
+          st.success(f"Item '{item_name}' added to the bill.")
+        if st.button("Clear"):
+          bill.items.clear()
+    # Display the current bill
+        st.subheader("Current Bill")
+        for item in bill.items:
+          st.write(f"{item['name']}: {item['price']}")
+
+        bill_amount = bill.calculate_total()
+        st.write(f"Total Bill Amount: {bill_amount}")
+
+    # Continue with payment logic based on the selected payment method
         payment_method = st.selectbox("Payment Method", ["Cash", "Credit Card", "Online"])
 
         if st.button("Generate Bill"):
-            if payment_method == "Cash":
-                cash_payment = Cash(bill_amount)
-                st.success(cash_payment.make_payment(bill_amount))
-            elif payment_method == "Credit Card":
-                card_number = st.text_input("Credit Card Number")
-                expiry_date = st.text_input("Expiry Date (MM/YYYY)")
-                credit_card_payment = CreditCard(bill_amount, card_number, expiry_date)
-                st.success(credit_card_payment.make_payment(bill_amount))
-            elif payment_method == "Online":
-                email = st.text_input("Customer Email")
-                online_payment = Online(bill_amount, email)
-                st.success(online_payment.make_payment(bill_amount))
-            else:
-                st.error("Invalid payment method selected.")
+          if payment_method == "Cash":
+            cash_bill = CashBill()
+            st.success(cash_bill.make_payment(bill_amount))
 
+          elif payment_method == "Credit Card":
+            card_number = st.text_input("Credit Card Number")
+            expiry_date = st.text_input("Expiry Date (MM/YYYY)")
+            credit_card_bill = CreditCardBill(card_number, expiry_date)
+            st.success(credit_card_bill.make_payment(bill_amount))
+
+          elif payment_method == "Online":
+            email = st.text_input("Customer Email")
+            online_bill = OnlineBill(email)
+            st.success(online_bill.make_payment(bill_amount))
+
+          else:
+            st.error("Invalid payment method selected.")
+   
     elif st.session_state.nav_option == "Logout":
         st.session_state.user = None
