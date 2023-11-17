@@ -58,7 +58,24 @@ class Employee(Person, ABC):  # Inherit from Person and ABC
 #     def take_order(self):
 #         # Logic for the chef to take an order
 #         pass
+class Manager(Employee):
+    def __init__(self, id, account, name, email, phone, is_admin=False):
+        super().__init__(id, account, name, email, phone)
+        self.__is_admin = is_admin
 
+    def is_admin(self):
+        return self.__is_admin
+
+    def add_employee(self, employee_list, new_employee):
+        # Logic to add a new employee
+        if self.is_admin():
+            employee_list.append(new_employee)
+            return employee_list
+        else:
+            print("Only admin can add new employees.")
+            return employee_list
+
+# Modify the Receptionist class in people.py
 class Receptionist(Employee):
     def __init__(self, id, account, name, email, phone):
         super().__init__(id, account, name, email, phone)
@@ -76,27 +93,46 @@ class Receptionist(Employee):
             return reservation
         else:
             return None
+# class Receptionist(Employee):
+#     def __init__(self, id, account, name, email, phone):
+#         super().__init__(id, account, name, email, phone)
 
-    def search_customer(self, customers, name):
-        # Logic to search for a customer
-        matching_customers = [customer for customer in customers if name.lower() in customer.get_name().lower()]
-        return matching_customers
+#     def create_reservation(self, customer, people_count, notes, branch, table_chart, capacity, start_time):
+#         # Logic to create a reservation
+#         available_tables = branch.search_available_tables(capacity, start_time)
+        
+#         if available_tables:
+#             reservation = Reservation.create_reservation(people_count, notes, customer)
+#             selected_table = available_tables[0]  # Assume the first available table is selected
+#             reservation.add_table(selected_table)
+#             table_chart.update_table_status(selected_table.get_number(), ReservationStatus.RESERVED)
+#             branch.add_reservation(reservation)
+#             return reservation
+#         else:
+#             return None
 
-    def view_table_chart(self, table_chart):
-        table_chart.print_table_chart()
+#     def search_customer(self, customers, name):
+#         # Logic to search for a customer
+#         matching_customers = [customer for customer in customers if name.lower() in customer.get_name().lower()]
+#         return matching_customers
 
-class Manager(Employee):
-    def __init__(self, id, account, name, email, phone):
-        super().__init__(id, account, name, email, phone)
+#     def view_table_chart(self, table_chart):
+#         table_chart.print_table_chart()
 
-    def add_employee(self, employee_list, new_employee):
-        # Logic to add a new employee
-        employee_list.append(new_employee)
-        return employee_list
+# class Manager(Employee):
+#     def __init__(self, id, account, name, email, phone):
+#         super().__init__(id, account, name, email, phone)
+
+#     def add_employee(self, employee_list, new_employee):
+#         # Logic to add a new employee
+#         employee_list.append(new_employee)
+#         return employee_list
 
 class Chef(Employee):
+    chef_count = 0
     def __init__(self, id, account, name, email, phone):
         super().__init__(id, account, name, email, phone)
+        Chef.chef_count += 1
 
     def take_order(self, order):
           if order.get_status() == OrderStatus.RECEIVED:
