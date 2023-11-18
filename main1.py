@@ -3,17 +3,19 @@ from datetime import datetime
 from reservation import Reservation, Table, TableSeat
 from infrastructure import Branch, Kitchen, Restaurant, TableChart
 from people import Receptionist, Manager, Chef
-from enums import ReservationStatus
+from enums import *
 from bill_generation_with_ui import *
 from menu import Menu, MenuItem, MenuSection
 
-# Hardcoded admin credentials (for simplicity, replace with a secure authentication mechanism)
-admin_username = "admin"
-admin_password = "admin123"
+admin_credentials = st.secrets["admin_credentials"]
+admin_username = admin_credentials["username"]
+admin_password = admin_credentials["password"]
+
 session_state = st.session_state
 if 'bill' not in session_state:
     session_state.bill = Bill()
-
+if "reservation" not in st.session_state:
+    st.session_state.reservation = None
 # Initialize the restaurant
 restaurant = Restaurant("My Restaurant")
 kitchen = Kitchen("Main Kitchen")
@@ -39,7 +41,11 @@ menu.add_menu_section(section2)
 
 # Add the menu to the branch
 branch.add_menu(menu)
-
+#  id, max_capacity, location_identifier, status=TableStatus.FREE
+table1 = Table(1,5,'window',TableStatus.FREE)
+table2 = Table(2,5,'corner',TableStatus.FREE)
+branch.add_table(table1)
+branch.add_table(table2)
 # Create Streamlit UI
 st.title("Deccan Delights Restaurant")
 
@@ -68,7 +74,7 @@ else:
 
     # Page selection for logged-in user
     st.sidebar.header("Navigation")
-    st.session_state.nav_option = st.sidebar.selectbox("Select a page", ["Home", "Create Reservation", "View Table Chart", "Generate Bill", "Logout"])
+    st.session_state.nav_option = st.sidebar.selectbox("Select a page", ["Home","Employee Database", "Create Reservation","Our Special Menus today", "View Table Chart", "Generate Bill", "Logout"])
 
     # Display different pages based on the selected option
     if st.session_state.nav_option == "Home":
@@ -88,10 +94,11 @@ else:
         if st.button("Create Reservation"):
             # Logic to create a reservation
             reservation = receptionist.create_reservation(
-                customer_name, people_count, notes, branch, table_chart, people_count, datetime.combine(reservation_date, reservation_time)
+                customer_name, people_count, notes, branch, table_chart, people_count,datetime.combine(reservation_date, reservation_time)
             )
             if reservation:
                 st.success(f"Reservation created successfully! Reservation ID: {reservation.get_reservation_id()}")
+                st.session_state.reservation = reservation
             else:
                 st.error("No available tables for the specified time and capacity.")
 

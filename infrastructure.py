@@ -7,13 +7,6 @@ class Kitchen:
     def assign_chef(self, chef):
         self.__chefs.append(chef)
 
-
-# class Branch:
-#     def __init__(self, name, location, kitchen):
-#         self.__name = name
-#         self.__location = location
-#         self.__kitchen = kitchen
-
 class Branch:
     def __init__(self, name, location, kitchen):
         self.__name = name
@@ -46,34 +39,19 @@ class Restaurant:
     def add_branch(self, branch):
         self.__branches.append(branch)
 
-
-class Table:
-    def __init__(self, number, capacity, location_identifier):
-        self.__number = number
-        self.__capacity = capacity
-        self.__location_identifier = location_identifier
-        
-    def is_table_free(self):
-        return self.__status == TableStatus.FREE    
-
-    def get_number(self):
-        return self.__number
-    def add_reservation(self, reservation):
-        self.__status = TableStatus.RESERVED
-        self.__seats.extend(reservation.get_table_seats())
-
-    def get_capacity(self):
-        return self.__capacity
-
-    def get_location_identifier(self):
-        return self.__location_identifier
-
-# infrastructure.py
 class TableChart:
     def __init__(self, id):
         self.__table_chart_id = id
         self.__table_chart_image = []
-
+    # def update_table_status(self, table_number, new_status):
+    #     if table_number in self.__tables:
+    #         self.__tables[table_number].update_status(new_status)
+    def update_table_status(self, table_number, new_status):
+        for table in self.__table_chart_image:
+            if table.get_number() == table_number:
+                table.update_status(new_status)
+                break
+            
     def add_table(self, table):
         self.__table_chart_image.append(table)
 

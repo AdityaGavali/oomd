@@ -3,6 +3,8 @@ from abc import ABC
 from datetime import datetime
 from enums import *
 from reservation import Reservation
+from  infrastructure import *
+import uuid
 
 class Account:
     def __init__(self, id, password, address, status=AccountStatus.ACTIVE):
@@ -27,37 +29,6 @@ class Employee(Person, ABC):  # Inherit from Person and ABC
         self.__date_joined = datetime.now()
         self.__account = account
 
-
-
-# class Receptionist(Employee):
-#     def __init__(self, id, account, name, email, phone):
-#         super().__init__(id, account, name, email, phone)
-
-#     def create_reservation(self):
-#         # Logic to create a reservation
-#         pass
-
-#     def search_customer(self, name):
-#         # Logic to search for a customer
-#         pass
-
-
-# class Manager(Employee):
-#     def __init__(self, id, account, name, email, phone):
-#         super().__init__(id, account, name, email, phone)
-
-#     def add_employee(self):
-#         # Logic to add a new employee
-#         pass
-
-
-# class Chef(Employee):
-#     def __init__(self, id, account, name, email, phone):
-#         super().__init__(id, account, name, email, phone)
-
-#     def take_order(self):
-#         # Logic for the chef to take an order
-#         pass
 class Manager(Employee):
     def __init__(self, id, account, name, email, phone, is_admin=False):
         super().__init__(id, account, name, email, phone)
@@ -74,8 +45,8 @@ class Manager(Employee):
         else:
             print("Only admin can add new employees.")
             return employee_list
-
-# Modify the Receptionist class in people.py
+def generate_reservation_id():
+  return str(uuid.uuid4())
 class Receptionist(Employee):
     def __init__(self, id, account, name, email, phone):
         super().__init__(id, account, name, email, phone)
@@ -83,35 +54,43 @@ class Receptionist(Employee):
     def create_reservation(self, customer, people_count, notes, branch, table_chart, capacity, start_time):
         # Logic to create a reservation
         available_tables = branch.search_available_tables(capacity, start_time)
-        
+
         if available_tables:
-            reservation = Reservation.create_reservation(people_count, notes, customer)
-            selected_table = available_tables[0]  # Assume the first available table is selected
+            reservation_id = generate_reservation_id()
+            reservation = Reservation(reservation_id,people_count, notes, customer)
+            selected_table = available_tables[0]
             reservation.add_table(selected_table)
-            table_chart.update_table_status(selected_table.get_number(), ReservationStatus.RESERVED)
+            table_chart.update_table_status(selected_table.get_number(), TableStatus.RESERVED)
             branch.add_reservation(reservation)
             return reservation
         else:
             return None
+
     def view_table_chart(self, table_chart):
-        table_chart.print_table_chart()    
+        table_chart.print_table_chart()        
+
+# Modify the Receptionist class in people.py
 # class Receptionist(Employee):
 #     def __init__(self, id, account, name, email, phone):
 #         super().__init__(id, account, name, email, phone)
 
 #     def create_reservation(self, customer, people_count, notes, branch, table_chart, capacity, start_time):
 #         # Logic to create a reservation
+        
 #         available_tables = branch.search_available_tables(capacity, start_time)
         
 #         if available_tables:
-#             reservation = Reservation.create_reservation(people_count, notes, customer)
-#             selected_table = available_tables[0]  # Assume the first available table is selected
+#             reservation = Reservation.create_reservation(people_count)
+#             selected_table = available_tables[0] 
 #             reservation.add_table(selected_table)
 #             table_chart.update_table_status(selected_table.get_number(), ReservationStatus.RESERVED)
 #             branch.add_reservation(reservation)
 #             return reservation
 #         else:
 #             return None
+#     def view_table_chart(self, table_chart):
+#         table_chart.print_table_chart()    
+# 
 
 #     def search_customer(self, customers, name):
 #         # Logic to search for a customer

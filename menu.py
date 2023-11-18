@@ -1,3 +1,5 @@
+from enums import *
+
 class MenuItem:
     def __init__(self, id, title, description, price):
         self.__menu_item_id = id
