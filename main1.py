@@ -6,6 +6,7 @@ from people import Receptionist, Manager, Chef
 from enums import *
 from bill_generation_with_ui import *
 from menu import Menu, MenuItem, MenuSection
+from employee_creation import *
 
 admin_credentials = st.secrets["admin_credentials"]
 admin_username = admin_credentials["username"]
@@ -23,9 +24,9 @@ branch = Branch("Main Branch", "City Center", kitchen)
 table_chart = TableChart(1)
 
 # Create employees
-receptionist = Receptionist(1, "receptionist_account", "Receptionist Name", "receptionist@email.com", "123456789")
-manager = Manager(2, "manager_account", "Manager Name", "manager@email.com", "987654321")
-chef = Chef(3, "chef_account", "Chef Name", "chef@email.com", "456789012")
+receptionist = Receptionist(1, "receptionist_account", "Ashish_Receptionist", "receptionist@email.com", "123456789")
+manager = Manager(2, "manager_account", "Vansh_Manager", "manager@email.com", "987654321")
+chef = Chef(3, "chef_account", "Hemant_Chef", "chef@email.com", "456789012")
 
 # Create a sample menu
 menu = Menu(1, "Main Menu", "Delicious dishes for every taste")
@@ -46,9 +47,20 @@ table1 = Table(1,5,'window',TableStatus.FREE)
 table2 = Table(2,5,'corner',TableStatus.FREE)
 branch.add_table(table1)
 branch.add_table(table2)
+table_chart.add_table(table1)
+table_chart.add_table(table2)
 # Create Streamlit UI
 st.title("Deccan Delights Restaurant")
+def generate_receipt_data(bill, amount_paid, payment_method, payment_result):
+           receipt = f"Receipt Details\n\n"
+           receipt += "Items Purchased:\n"
+           for item in bill.items:
+                receipt += f"- {item['name']}: {item['price']}\n"
+           receipt += f"\nTotal Amount Paid: {amount_paid}\n"
+           receipt += f"Payment Method: {payment_method}\n"
+           receipt += f"Payment Result: {payment_result}\n"
 
+           return receipt
 # Initialize session state for user and navigation
 if "user" not in st.session_state:
     st.session_state.user = None
@@ -79,7 +91,29 @@ else:
     # Display different pages based on the selected option
     if st.session_state.nav_option == "Home":
         st.header("Welcome to the Restaurant Management System")
-        # Display general information about the restaurant
+
+    elif st.session_state.nav_option == "Employee Database":
+        st.subheader("All Employees")
+        for employee in [receptionist, manager, chef]:
+            st.write(f"Name: {employee.get_name()}, Category: {employee.get_category()}")
+        st.title("Employee Creation Section")
+
+# Create buttons for each class
+        if st.button("Create Manager"):
+         create_manager()
+
+        if st.button("Create Receptionist"):
+         create_receptionist()
+
+        if st.button("Create Chef"):
+         create_chef()
+
+    elif st.session_state.nav_option == " Special Menus ":
+        st.header("Menu")
+        for section in menu.get_menu_sections():
+            st.subheader(section.get_title())
+            for item in section.get_menu_items():
+                st.write(f"{item.get_title()}: {item.get_price()}")
 
     elif st.session_state.nav_option == "Create Reservation":
         st.header("Create Reservation")
@@ -102,16 +136,12 @@ else:
             else:
                 st.error("No available tables for the specified time and capacity.")
 
+
     elif st.session_state.nav_option == "View Table Chart":
         st.header("View Table Chart")
-        receptionist.view_table_chart(table_chart)
+        st.write(f"{receptionist.view_table_chart(table_chart)}")
 
-        # Display the menu
-        st.header("Menu")
-        for section in menu.get_menu_sections():
-            st.subheader(section.get_title())
-            for item in section.get_menu_items():
-                st.write(f"{item.get_title()}: {item.get_price()}")
+   
 
     elif st.session_state.nav_option == "Generate Bill":
         st.header("Generate Bill")
@@ -136,25 +166,44 @@ else:
 
     # Continue with payment logic based on the selected payment method
         payment_method = st.selectbox("Payment Method", ["Cash", "Credit Card", "Online"])
-
+        email = st.text_input("Customer Email")
+        card_number = st.text_input("Credit Card Number", type="password")
+        expiry_date = st.text_input("Expiry Date (MM/YYYY)", type="password")
+        payment_result = None
         if st.button("Generate Bill"):
           if payment_method == "Cash":
             cash_bill = CashBill()
-            st.success(cash_bill.make_payment(bill_amount))
+            payment_result = cash_bill.make_payment(bill_amount)
 
           elif payment_method == "Credit Card":
-            card_number = st.text_input("Credit Card Number")
-            expiry_date = st.text_input("Expiry Date (MM/YYYY)")
             credit_card_bill = CreditCardBill(card_number, expiry_date)
-            st.success(credit_card_bill.make_payment(bill_amount))
+            payment_result = credit_card_bill.make_payment(bill_amount)
 
-          elif payment_method == "Online":
-            email = st.text_input("Customer Email")
+          elif payment_method == "Online":   
             online_bill = OnlineBill(email)
-            st.success(online_bill.make_payment(bill_amount))
-
+            payment_result = online_bill.make_payment(bill_amount)
           else:
             st.error("Invalid payment method selected.")
+          if payment_result and "failed" not in payment_result.lower():
+        # Display receipt information
+            st.subheader("Receipt Details")
+            st.write("Items Purchased:")
+            for item in bill.items:
+              st.write(f"- {item['name']}: {item['price']}")
+            st.write(f"Total Amount Paid: {bill_amount}")
+            st.write(f"Payment Method: {payment_method}")
+            st.write(f"Payment Result: {payment_result}") 
+            receipt_data = generate_receipt_data(bill, bill_amount, payment_method, payment_result)
+            st.download_button(
+            label="Download Receipt",
+            data=receipt_data.encode(),
+            file_name="receipt.txt",
+            mime="text/plain",
+        )
+
+          else:
+           st.error(f"Payment failed. {payment_result}")
+      
    
     elif st.session_state.nav_option == "Logout":
         st.session_state.user = None

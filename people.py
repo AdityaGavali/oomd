@@ -33,7 +33,10 @@ class Manager(Employee):
     def __init__(self, id, account, name, email, phone, is_admin=False):
         super().__init__(id, account, name, email, phone)
         self.__is_admin = is_admin
-
+    def get_name(self):
+        return self._Person__name
+    def get_category(self):
+        return "Manager"
     def is_admin(self):
         return self.__is_admin
 
@@ -45,12 +48,19 @@ class Manager(Employee):
         else:
             print("Only admin can add new employees.")
             return employee_list
+        
+
 def generate_reservation_id():
   return str(uuid.uuid4())
+
+
 class Receptionist(Employee):
     def __init__(self, id, account, name, email, phone):
         super().__init__(id, account, name, email, phone)
-
+    def get_name(self):
+        return self._Person__name
+    def get_category(self):
+        return "Receptionist"
     def create_reservation(self, customer, people_count, notes, branch, table_chart, capacity, start_time):
         # Logic to create a reservation
         available_tables = branch.search_available_tables(capacity, start_time)
@@ -114,7 +124,10 @@ class Chef(Employee):
     def __init__(self, id, account, name, email, phone):
         super().__init__(id, account, name, email, phone)
         Chef.chef_count += 1
-
+    def get_name(self):
+        return self._Person__name
+    def get_category(self):
+        return "Chef"
     def take_order(self, order):
           if order.get_status() == OrderStatus.RECEIVED:
             # Process the order

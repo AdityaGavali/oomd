@@ -1,3 +1,4 @@
+import streamlit as st
 from enums import *
 class Kitchen:
     def __init__(self, name):
@@ -51,13 +52,18 @@ class TableChart:
             if table.get_number() == table_number:
                 table.update_status(new_status)
                 break
-            
+
     def add_table(self, table):
         self.__table_chart_image.append(table)
 
     def print_table_chart(self):
+        st.write("Table Chart:")
         for table in self.__table_chart_image:
-            print(f'Table Number: {table.get_number()}, Capacity: {table.get_capacity()}, Location: {table.get_location_identifier()}')
+            st.write(f'Table Number: {table.get_number()}, Capacity: {table.get_capacity()}, Status : {table.show_status()}, Location : {table.show_location()}')
 
 
+    # def view_table_chart(self, table_chart):
+    #     st.write("Table Chart:")
+    #     for table in table_chart.get_table_chart_image():
+    #         st.write(f'Table Number: {table.get_number()}, Capacity: {table.get_capacity()}, Location: {table.get_location_identifier()}')
 

@@ -26,7 +26,7 @@ class CreditCardBill(Bill):
 
     def make_payment(self, amount_paid):
         if amount_paid >= self.calculate_total():
-            return f"Paid {self.calculate_total()} using Credit Card ending with {self.card_number[-4:]}"
+            return f"Paid  using Credit Card ending with {self.card_number[-4:]}"
         else:
             return "Credit card limit exceeded. Payment failed."
 
@@ -37,6 +37,6 @@ class OnlineBill(Bill):
 
     def make_payment(self, amount_paid):
         if amount_paid >= self.calculate_total():
-            return f"Paid {self.calculate_total()} online to {self.email}"
+            return f"Paid  online by {self.email}"
         else:
             return "Insufficient funds in the online account. Payment failed."

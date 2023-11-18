@@ -9,12 +9,16 @@ class Table:
         self.__seats = []
     def get_number(self):
         return self.__table_id
-
+    def show_location(self):
+        return self.__location_identifier
+    def show_status(self):
+        return self.__status
     def is_table_free(self):
         return self.__status == TableStatus.FREE
     def get_capacity(self):
         return self.__max_capacity
-
+    def update_status(self, new_status):
+        self.__status = new_status
     def add_reservation(self, reservation):
         self.__status = TableStatus.RESERVED
         self.__seats.extend(reservation.get_table_seats())
