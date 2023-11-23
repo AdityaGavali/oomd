@@ -2,8 +2,9 @@ import streamlit as st
 from datetime import datetime
 from reservation import Reservation, Table, TableSeat
 from infrastructure import Branch, Kitchen, Restaurant, TableChart
-from people import Receptionist, Manager, Chef
+from people import *
 from enums import *
+from menu_management import *
 from bill_generation_with_ui import *
 from menu import Menu, MenuItem, MenuSection
 from employee_creation import *
@@ -13,6 +14,16 @@ admin_username = admin_credentials["username"]
 admin_password = admin_credentials["password"]
 
 session_state = st.session_state
+if "tables" not in st.session_state:
+    st.session_state.tables = []
+if "reservations" not in st.session_state:
+    st.session_state.reservations = []
+if "managers" not in st.session_state:
+    st.session_state.managers = []
+if "receptionists" not in st.session_state:
+    st.session_state.receptionists = []
+if "chefs" not in st.session_state:
+    st.session_state.chefs = []
 if 'bill' not in session_state:
     session_state.bill = Bill()
 if "reservation" not in st.session_state:
@@ -23,12 +34,6 @@ kitchen = Kitchen("Main Kitchen")
 branch = Branch("Main Branch", "City Center", kitchen)
 table_chart = TableChart(1)
 
-# Create employees
-receptionist = Receptionist(1, "receptionist_account", "Ashish_Receptionist", "receptionist@email.com", "123456789")
-manager = Manager(2, "manager_account", "Vansh_Manager", "manager@email.com", "987654321")
-chef = Chef(3, "chef_account", "Hemant_Chef", "chef@email.com", "456789012")
-
-# Create a sample menu
 menu = Menu(1, "Main Menu", "Delicious dishes for every taste")
 section1 = MenuSection(1, "Starters", "Appetizing beginnings")
 section1.add_menu_item(MenuItem(1, "Garlic Bread", "Toasty and flavorful", 5.99))
@@ -40,16 +45,16 @@ section2.add_menu_item(MenuItem(3, "Spaghetti Bolognese", "Classic Italian pasta
 section2.add_menu_item(MenuItem(4, "Grilled Salmon", "Healthy and delicious", 16.99))
 menu.add_menu_section(section2)
 
-# Add the menu to the branch
 branch.add_menu(menu)
 #  id, max_capacity, location_identifier, status=TableStatus.FREE
 table1 = Table(1,5,'window',TableStatus.FREE)
-table2 = Table(2,5,'corner',TableStatus.FREE)
+table2 = Table(2,5,'corner',TableStatus.OCCUPIED)
 branch.add_table(table1)
 branch.add_table(table2)
 table_chart.add_table(table1)
 table_chart.add_table(table2)
 # Create Streamlit UI
+
 st.title("Deccan Delights Restaurant")
 def generate_receipt_data(bill, amount_paid, payment_method, payment_result):
            receipt = f"Receipt Details\n\n"
@@ -61,14 +66,10 @@ def generate_receipt_data(bill, amount_paid, payment_method, payment_result):
            receipt += f"Payment Result: {payment_result}\n"
 
            return receipt
-# Initialize session state for user and navigation
 if "user" not in st.session_state:
     st.session_state.user = None
-
 if "nav_option" not in st.session_state:
     st.session_state.nav_option = "Home"
-
-# Page selection
 if st.session_state.user is None:
     st.sidebar.header("Admin Login")
     entered_username = st.sidebar.text_input("Enter username:")
@@ -79,69 +80,88 @@ if st.session_state.user is None:
         if entered_username == admin_username and entered_password == admin_password:
             st.session_state.user = "admin"
 else:
-    # If the user is logged in, hide the login form
+ 
     st.sidebar.empty()
 
-    # Rest of the code
-
-    # Page selection for logged-in user
     st.sidebar.header("Navigation")
-    st.session_state.nav_option = st.sidebar.selectbox("Select a page", ["Home","Employee Database", "Create Reservation","Our Special Menus today", "View Table Chart", "Generate Bill", "Logout"])
+    st.session_state.nav_option = st.sidebar.selectbox("Select a page", ["Home","Employee Database","Special Menus", "View Table Chart", "Generate Bill", "Logout"])
 
     # Display different pages based on the selected option
     if st.session_state.nav_option == "Home":
         st.header("Welcome to the Restaurant Management System")
 
     elif st.session_state.nav_option == "Employee Database":
+        st.title("Employee Management Section")
         st.subheader("All Employees")
-        for employee in [receptionist, manager, chef]:
-            st.write(f"Name: {employee.get_name()}, Category: {employee.get_category()}")
-        st.title("Employee Creation Section")
 
-# Create buttons for each class
-        if st.button("Create Manager"):
-         create_manager()
+    # Display details of all employees
+        for manager in st.session_state.managers:
+          st.write(f"Name: {manager.get_name()}, Category: {manager.get_category()}")
+        for receptionist in st.session_state.receptionists:
+         st.write(f"Name: {receptionist.get_name()}, Category: {receptionist.get_category()}")
+        for chef in st.session_state.chefs:
+         st.write(f"Name: {chef.get_name()}, Category: {chef.get_category()}")
 
-        if st.button("Create Receptionist"):
-         create_receptionist()
-
-        if st.button("Create Chef"):
-         create_chef()
-
-    elif st.session_state.nav_option == " Special Menus ":
-        st.header("Menu")
-        for section in menu.get_menu_sections():
-            st.subheader(section.get_title())
-            for item in section.get_menu_items():
-                st.write(f"{item.get_title()}: {item.get_price()}")
-
-    elif st.session_state.nav_option == "Create Reservation":
-        st.header("Create Reservation")
-
-        # Form to create a reservation
-        customer_name = st.text_input("Customer Name")
-        people_count = st.number_input("Number of People", min_value=1, step=1)
-        notes = st.text_area("Notes")
-        reservation_date = st.date_input("Reservation Date", value=datetime.now())
-        reservation_time = st.time_input("Reservation Time", value=datetime.now().time())
-
-        if st.button("Create Reservation"):
-            # Logic to create a reservation
-            reservation = receptionist.create_reservation(
-                customer_name, people_count, notes, branch, table_chart, people_count,datetime.combine(reservation_date, reservation_time)
-            )
-            if reservation:
-                st.success(f"Reservation created successfully! Reservation ID: {reservation.get_reservation_id()}")
-                st.session_state.reservation = reservation
-            else:
-                st.error("No available tables for the specified time and capacity.")
-
+    # Employee management buttons
+        employee_type = st.radio("Select Employee Type", ["Manager", "Receptionist", "Chef"])
+        if employee_type == "Manager":
+          create_manager()
+          if st.button("View Managers"):
+            for manager in st.session_state.managers:
+                st.write(f"Name: {manager.get_name()}, Category: {manager.get_category()}, Admin: {manager.is_admin()}")
+        elif employee_type == "Receptionist":
+          create_receptionist()
+          if st.button("View Receptionists"):
+            for receptionist in st.session_state.receptionists:
+                st.write(f"Name: {receptionist.get_name()}, Category: {receptionist.get_category()}")
+        elif employee_type == "Chef":
+          create_chef()
+          if st.button("View Chefs"):
+            for chef in st.session_state.chefs:
+                st.write(f"Name: {chef.get_name()}, Category: {chef.get_category()}")
+     
+    elif st.session_state.nav_option == "Special Menus":
+        menu_management_ui()
 
     elif st.session_state.nav_option == "View Table Chart":
-        st.header("View Table Chart")
-        st.write(f"{receptionist.view_table_chart(table_chart)}")
+        st.title("Reservation And Table Management")
+        reservation_option = st.selectbox("Select Reservation Action", ["Create Reservation", "View Reservations"])
 
-   
+        if reservation_option == "Create Reservation":
+         st.subheader("Create Reservation")
+         with st.form(key="create_reservation_form"):
+          customer_name = st.text_input("Customer Name")
+          people_count = st.number_input("Number of People", min_value=1, step=1)
+          notes = st.text_area("Reservation Notes")
+          reservation_id = st.text_input("Reservation ID")
+
+          if st.form_submit_button("Create Reservation"):
+            reservation = Reservation(reservation_id, people_count, notes, customer_name)
+            st.session_state.reservations.append(reservation)
+            st.success(f"Reservation created! ID: {reservation.get_reservation_id()}, Customer: {customer_name}")
+
+        elif reservation_option == "View Reservations":
+          st.subheader("View Reservations")
+          for reservation in st.session_state.reservations:
+            st.write(f"Reservation ID: {reservation.get_reservation_id()}")
+     
+        st.title("Table data")
+        table_option = st.selectbox("Select Action", ["Create Table", "View tables"])
+
+        if table_option == "Create Table":
+         with st.form(key="create_table_form"):
+          table_id = st.text_input("Table id")
+          table_capacity = st.number_input("Capacity", min_value=1, step=1)
+          table_location = st.text_area("Location")
+          table_status = st.text_input("Status (FREE OR RESERVED)")
+          if st.form_submit_button("Add table"):
+            table = Table(table_id, table_capacity, table_location, table_status)
+            st.session_state.tables.append(table)
+            st.success(f"Table added! ID: {table.get_number()}, Location: {table.show_location()}, Status: {table.show_status()}")
+        elif table_option == "View tables":
+          st.subheader("Tables")
+          for table in st.session_state.tables:
+            st.write(f"Table Id: {table.get_number()}, Location: {table.show_location()}, Status: {table.show_status()}")
 
     elif st.session_state.nav_option == "Generate Bill":
         st.header("Generate Bill")

@@ -46,42 +46,6 @@ class TableSeat:
     def get_seat_type(self):
         return self.__type
 
-
-# class Reservation:
-#     def __init__(self, id, people_count, notes, customer):
-#         self.__reservation_id = id
-#         self.__time_of_reservation = datetime.now()
-#         self.__people_count = people_count
-#         self.__status = ReservationStatus.REQUESTED
-#         self.__notes = notes
-#         self.__checkin_time = None
-#         self.__customer = customer
-#         self.__tables = []
-#         self.__notifications = []
-#     def create_reservation(self, people_count):
-#         self.__people_count = people_count
-
-#     def update_people_count(self, count):
-#         self.__people_count = count
-
-#     def add_table(self, table):
-#         self.__tables.append(table)
-
-#     def get_table_seats(self):
-#         seats = []
-#         for table in self.__tables:
-#             for seat_number in range(1, table.__max_capacity + 1):
-#                 seat = TableSeat(seat_number)
-#                 seats.append(seat)
-#         return seats
-
-#     def check_in(self):
-#         self.__status = ReservationStatus.CHECKED_IN
-#         self.__checkin_time = datetime.now()
-
-#     def cancel_reservation(self):
-#         self.__status = ReservationStatus.CANCELED
-
 class Reservation:
     def __init__(self, reservation_id, people_count, notes, customer):
         self.__reservation_id = reservation_id
@@ -95,7 +59,7 @@ class Reservation:
         self.__notifications = []
     def get_reservation_id(self):
         return self.__reservation_id
-
+    
     def update_people_count(self, count):
         self.__people_count = count
 

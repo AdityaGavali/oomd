@@ -1,13 +1,6 @@
+# employee_creation.py
 import streamlit as st
 from people import Manager, Receptionist, Chef
-
-# Initialize session state
-if "managers" not in st.session_state:
-    st.session_state.managers = []
-if "receptionists" not in st.session_state:
-    st.session_state.receptionists = []
-if "chefs" not in st.session_state:
-    st.session_state.chefs = []
 
 def create_manager():
     st.subheader("Create Manager")
@@ -24,7 +17,7 @@ def create_manager():
             st.session_state.managers.append(manager1)
             
             st.success(f"Manager created! ID: {manager1.get_employee_id()}, Name: {manager1.get_name()}")
-
+            return manager1  # Return the created manager object
 def create_receptionist():
     st.subheader("Create Receptionist")
     with st.form(key="create_receptionist_form"):
@@ -38,6 +31,7 @@ def create_receptionist():
             receptionist = Receptionist(receptionist_id, receptionist_account, receptionist_name, receptionist_email, receptionist_phone)
             st.session_state.receptionists.append(receptionist)
             st.success(f"Receptionist created! ID: {receptionist.get_employee_id()}, Name: {receptionist.get_name()}")
+            return receptionist
 
 def create_chef():
     st.subheader("Create Chef")
@@ -52,4 +46,4 @@ def create_chef():
             chef = Chef(chef_id, chef_account, chef_name, chef_email, chef_phone)
             st.session_state.chefs.append(chef)
             st.success(f"Chef created! ID: {chef.get_employee_id()}, Name: {chef.get_name()}")
-
+            return chef

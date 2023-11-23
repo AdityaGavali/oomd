@@ -28,7 +28,8 @@ class Employee(Person, ABC):  # Inherit from Person and ABC
         self.__employee_id = id
         self.__date_joined = datetime.now()
         self.__account = account
-
+    def get_employee_id(self):  # Added the getter method for employee_id
+        return self.__employee_id
 class Manager(Employee):
     def __init__(self, id, account, name, email, phone, is_admin=False):
         super().__init__(id, account, name, email, phone)
@@ -78,46 +79,6 @@ class Receptionist(Employee):
 
     def view_table_chart(self, table_chart):
         table_chart.print_table_chart()        
-
-# Modify the Receptionist class in people.py
-# class Receptionist(Employee):
-#     def __init__(self, id, account, name, email, phone):
-#         super().__init__(id, account, name, email, phone)
-
-#     def create_reservation(self, customer, people_count, notes, branch, table_chart, capacity, start_time):
-#         # Logic to create a reservation
-        
-#         available_tables = branch.search_available_tables(capacity, start_time)
-        
-#         if available_tables:
-#             reservation = Reservation.create_reservation(people_count)
-#             selected_table = available_tables[0] 
-#             reservation.add_table(selected_table)
-#             table_chart.update_table_status(selected_table.get_number(), ReservationStatus.RESERVED)
-#             branch.add_reservation(reservation)
-#             return reservation
-#         else:
-#             return None
-#     def view_table_chart(self, table_chart):
-#         table_chart.print_table_chart()    
-# 
-
-#     def search_customer(self, customers, name):
-#         # Logic to search for a customer
-#         matching_customers = [customer for customer in customers if name.lower() in customer.get_name().lower()]
-#         return matching_customers
-
-#     def view_table_chart(self, table_chart):
-#         table_chart.print_table_chart()
-
-# class Manager(Employee):
-#     def __init__(self, id, account, name, email, phone):
-#         super().__init__(id, account, name, email, phone)
-
-#     def add_employee(self, employee_list, new_employee):
-#         # Logic to add a new employee
-#         employee_list.append(new_employee)
-#         return employee_list
 
 class Chef(Employee):
     chef_count = 0
